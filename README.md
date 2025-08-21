@@ -23,7 +23,7 @@ Aplikasi **Laravel Job Tracker** ini membantu kamu untuk mencatat dan memantau s
 **Form Edit Lamaran**
 ![Edit Lamaran](screenshots/edit-lamaran.png)
 
-> Ganti file `screenshots/dashboard.png` dan `screenshots/edit-lamaran.png` dengan screenshot asli sebelum upload ke GitHub.
+#> Ganti file `screenshots/dashboard.png` dan `screenshots/edit-lamaran.png` dengan screenshot asli sebelum upload ke GitHub.
 
 ---
 
@@ -31,26 +31,26 @@ Aplikasi **Laravel Job Tracker** ini membantu kamu untuk mencatat dan memantau s
 
 Ikuti langkah-langkah berikut untuk menjalankan project di lokal:
 
-1. **Clone repository**
+**1. Clone repository**
 ```bash
 git clone https://github.com/winduputra/laravel-job-tracker.git
 cd laravel-job-tracker
 ```
-2. **Install dependencies**
+**2. Install dependencies**
 ```bash
 composer install
 npm install
 npm run dev
 ```
-4. Copy file environment
+**3. Copy file environment**
 ```bash
 cp .env.example .env
 ```
-5. Generate app key
+**4. Generate app key**
 ```bash
 php artisan key:generate
 ```
-6. Konfigurasi database
+**5. Konfigurasi database**
 ```bash
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -59,11 +59,11 @@ DB_DATABASE=nama_database
 DB_USERNAME=username
 DB_PASSWORD=password
 ```
-7. Jalankan migrasi
+**6. Jalankan migrasi**
 ```bash
 php artisan migrate
 ```
-8. Jalankan server lokal
+**7. Jalankan server lokal**
 ```bash
 php artisan migrate
 http://127.0.0.1:8000
