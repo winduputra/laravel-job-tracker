@@ -211,6 +211,22 @@
             box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
         }
 
+        .btn-logout {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-logout:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+        }
+
         .form-input {
             background: rgba(30, 41, 59, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -353,6 +369,79 @@
         .light-mode ::-webkit-scrollbar-thumb {
             background: #4f46e5;
         }
+
+        /* Perbaikan untuk light mode */
+        .icon-light-adjust {
+            color: #f8fafc; /* Default untuk dark mode */
+        }
+
+        .light-mode .icon-light-adjust {
+            color: #4b5563; /* Warna abu-abu gelap untuk light mode */
+        }
+
+        /* Notifikasi bell button */
+        .notification-btn {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .light-mode .notification-btn {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .notification-btn:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .light-mode .table-controls button {
+            background: rgba(255, 255, 255, 0.7);
+            color: #4b5563;
+        }
+
+        .light-mode .table-controls button:hover {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .light-mode .pagination button {
+            background: rgba(255, 255, 255, 0.7);
+            color: #4b5563;
+        }
+
+        .light-mode .pagination button:hover {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .light-mode .pagination .active-page {
+            background: #4f46e5;
+            color: white;
+        }
+
+        /* URL Link styling */
+        .url-link {
+            color: #60a5fa;
+            text-decoration: underline;
+            transition: color 0.3s ease;
+        }
+
+        .url-link:hover {
+            color: #93c5fd;
+        }
+
+        .light-mode .url-link {
+            color: #2563eb;
+        }
+
+        .light-mode .url-link:hover {
+            color: #1d4ed8;
+        }
+
+        /* Logo styling */
+        .logo-img {
+            width: 2.5rem;
+            height: 2.5rem;
+            object-fit: contain;
+        }
     </style>
 </head>
 <body class="min-h-screen p-4 md:p-8">
@@ -360,7 +449,7 @@
     <div class="dashboard-header p-6 mb-8 flex justify-between items-center">
         <div class="flex items-center space-x-4">
             <div class="bg-primary-600 p-3 rounded-xl shadow-lg">
-                <i class="fas fa-briefcase text-white text-2xl"></i>
+                <img src="{{ asset('images/logo.svg') }}" alt="Logo" class="logo-img">
             </div>
             <div>
                 <h1 class="text-2xl font-bold">Job Application Dashboard</h1>
@@ -381,21 +470,24 @@
 
             <!-- Notifikasi -->
             <div class="relative">
-                <button class="p-2 rounded-full bg-dark-800 hover:bg-dark-700 transition">
+                <button class="p-2 rounded-full notification-btn hover:bg-opacity-80 transition icon-light-adjust">
                     <i class="fas fa-bell text-xl"></i>
                 </button>
                 <span class="pulse-dot"></span>
             </div>
 
-            <!-- Profil -->
+            <!-- User Info dan Logout -->
             <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-full bg-gradient-to-r from-primary-500 to-secondary-400 flex items-center justify-center text-white font-bold">
-                    U
-                </div>
                 <div>
-                    <p class="font-semibold">User Name</p>
-                    <p class="text-xs opacity-75">Admin</p>
+                    <p class="font-semibold">{{ Auth::user()->name ?? 'User Name' }}</p>
+                    <p class="text-xs opacity-75">User</p>
                 </div>
+                <form action="{{ route('logout') }}" method="POST" class="inline">
+                    @csrf
+                    <button type="submit" class="btn-logout" title="Logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </form>
             </div>
         </div>
     </div>
@@ -520,15 +612,15 @@
             <!-- Form Tambah Lamaran -->
             <div class="glass-card p-6 mb-8 animate-fade-in delay-400">
                 <h2 class="text-xl font-bold mb-6">Tambah Lamaran Kerja Baru</h2>
-                <form action="/dashboard" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <form action="/dashboard" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-6" id="lamaranForm">
                     @csrf
                     <div>
-                        <label class="block text-sm font-medium mb-2">Posisi</label>
-                        <input type="text" name="posisi" placeholder="Masukkan posisi yang dilamar" class="form-input w-full">
+                        <label class="block text-sm font-medium mb-2">Posisi <span class="text-red-500">*</span></label>
+                        <input type="text" name="posisi" placeholder="Masukkan posisi yang dilamar" class="form-input w-full" required>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium mb-2">Platform</label>
-                        <select name="platform" class="form-input w-full">
+                        <label class="block text-sm font-medium mb-2">Platform <span class="text-red-500">*</span></label>
+                        <select name="platform" class="form-input w-full" required>
                             <option value="">Pilih Platform</option>
                             <option value="LinkedIn">LinkedIn</option>
                             <option value="JobStreet">JobStreet</option>
@@ -538,20 +630,20 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium mb-2">URL Job</label>
-                        <input type="url" name="url_job" placeholder="https://..." class="form-input w-full">
+                        <label class="block text-sm font-medium mb-2">URL Job <span class="text-red-500">*</span></label>
+                        <input type="url" name="url_job" placeholder="https://..." class="form-input w-full" required>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium mb-2">Tanggal Lamaran</label>
-                        <input type="date" name="tanggal_lamaran" class="form-input w-full">
+                        <label class="block text-sm font-medium mb-2">Tanggal Lamaran <span class="text-red-500">*</span></label>
+                        <input type="date" name="tanggal_lamaran" class="form-input w-full" required>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium mb-2">Dokumen</label>
-                        <input type="text" name="dokumen" placeholder="Nama CV, portofolio, dll" class="form-input w-full">
+                        <label class="block text-sm font-medium mb-2">Dokumen <span class="text-red-500">*</span></label>
+                        <input type="text" name="dokumen" placeholder="Nama CV, portofolio, dll" class="form-input w-full" required>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium mb-2">Status</label>
-                        <select name="status" class="form-input w-full">
+                        <label class="block text-sm font-medium mb-2">Status <span class="text-red-500">*</span></label>
+                        <select name="status" class="form-input w-full" required>
                             <option value="dikirim">Dikirim</option>
                             <option value="wawancara">Wawancara</option>
                             <option value="diterima">Diterima</option>
@@ -574,7 +666,7 @@
             <div class="glass-card p-6 animate-fade-in">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-xl font-bold">Detail Lamaran Kerja</h2>
-                    <div class="flex space-x-3">
+                    <div class="flex space-x-3 table-controls">
                         <button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition">
                             <i class="fas fa-filter"></i>
                         </button>
@@ -593,6 +685,7 @@
                             <tr class="text-left border-b border-dark-700">
                                 <th class="pb-3">Posisi</th>
                                 <th class="pb-3">Platform</th>
+                                <th class="pb-3">URL</th>
                                 <th class="pb-3">Dokumen</th>
                                 <th class="pb-3">Tanggal</th>
                                 <th class="pb-3">Status</th>
@@ -604,6 +697,15 @@
                             <tr class="table-row">
                                 <td class="py-4">{{ $lamaran->posisi }}</td>
                                 <td class="py-4">{{ $lamaran->platform }}</td>
+                                <td class="py-4">
+                                    @if($lamaran->url_job)
+                                        <a href="{{ $lamaran->url_job }}" target="_blank" class="url-link" title="Buka link job">
+                                            <i class="fas fa-external-link-alt"></i>
+                                        </a>
+                                    @else
+                                        <span class="text-gray-400">-</span>
+                                    @endif
+                                </td>
                                 <td class="py-4">{{ $lamaran->dokumen }}</td>
                                 <td class="py-4">{{ $lamaran->tanggal_lamaran }}</td>
                                 <td class="py-4">
@@ -632,12 +734,12 @@
                 </div>
 
                 <div class="flex justify-between items-center pt-6 mt-6 border-t border-dark-700">
-                    <p class="text-sm opacity-75">Menampilkan 5 dari {{ $total ?? 0 }} lamaran</p>
-                    <div class="flex space-x-2">
+                    <p class="text-sm opacity-75">Menampilkan {{ min(5, count($lamarans)) }} dari {{ $total ?? 0 }} lamaran</p>
+                    <div class="flex space-x-2 pagination">
                         <button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition">
                             <i class="fas fa-chevron-left"></i>
                         </button>
-                        <button class="p-2 rounded-lg bg-primary-500 text-white transition">1</button>
+                        <button class="p-2 rounded-lg bg-primary-500 text-white transition active-page">1</button>
                         <button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition">2</button>
                         <button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition">3</button>
                         <button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition">
@@ -663,10 +765,10 @@
     <script>
         // Data untuk grafik
         const platformData = {
-            labels: {!! json_encode(array_keys($platformStats)) !!},
+            labels: {!! json_encode(array_keys($platformStats ?? [])) !!},
             datasets: [{
                 label: 'Total Lamaran',
-                data: {!! json_encode(array_values($platformStats)) !!},
+                data: {!! json_encode(array_values($platformStats ?? [])) !!},
                 backgroundColor: ['#6366f1', '#f97316', '#10b981', '#8b5cf6', '#ec4899'],
                 borderWidth: 0,
                 borderRadius: 6
@@ -676,7 +778,7 @@
         const statusData = {
             labels: ['Dikirim', 'Wawancara', 'Diterima', 'Ditolak'],
             datasets: [{
-                data: {!! json_encode([$total, $wawancara, $diterima, $ditolak]) !!},
+                data: {!! json_encode([($total ?? 0), ($wawancara ?? 0), ($diterima ?? 0), ($ditolak ?? 0)]) !!},
                 backgroundColor: ['#6366f1', '#f59e0b', '#10b981', '#ef4444'],
                 borderWidth: 0,
                 hoverOffset: 12
@@ -689,6 +791,11 @@
         function initCharts() {
             const platformCtx = document.getElementById('platformChart').getContext('2d');
             const statusCtx = document.getElementById('statusChart').getContext('2d');
+
+            // Deteksi tema saat ini
+            const isLightMode = document.body.classList.contains('light-mode');
+            const gridColor = isLightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
+            const textColor = isLightMode ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.7)';
 
             platformChart = new Chart(platformCtx, {
                 type: 'bar',
@@ -705,10 +812,10 @@
                         y: {
                             beginAtZero: true,
                             grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
+                                color: gridColor
                             },
                             ticks: {
-                                color: 'rgba(255, 255, 255, 0.7)'
+                                color: textColor
                             }
                         },
                         x: {
@@ -716,7 +823,7 @@
                                 display: false
                             },
                             ticks: {
-                                color: 'rgba(255, 255, 255, 0.7)'
+                                color: textColor
                             }
                         }
                     }
@@ -734,7 +841,7 @@
                         legend: {
                             position: 'bottom',
                             labels: {
-                                color: 'rgba(255, 255, 255, 0.7)',
+                                color: textColor,
                                 padding: 20,
                                 usePointStyle: true,
                                 pointStyle: 'circle'
@@ -781,6 +888,30 @@
             }
         }
 
+        // Validasi form
+        function setupFormValidation() {
+            const form = document.getElementById('lamaranForm');
+            
+            form.addEventListener('submit', function(e) {
+                let isValid = true;
+                const requiredFields = form.querySelectorAll('[required]');
+                
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        isValid = false;
+                        field.style.borderColor = '#ef4444';
+                    } else {
+                        field.style.borderColor = '';
+                    }
+                });
+                
+                if (!isValid) {
+                    e.preventDefault();
+                    alert('Harap isi semua field yang wajib diisi!');
+                }
+            });
+        }
+
         // Inisialisasi
         document.addEventListener('DOMContentLoaded', function() {
             // Set tema berdasarkan local storage atau preferensi sistem
@@ -793,14 +924,19 @@
                 setTheme(true);
             }
             
-            // Inisialisasi chart
-            initCharts();
+            // Inisialisasi chart setelah tema diset
+            setTimeout(() => {
+                initCharts();
+            }, 100);
             
             // Event listener untuk toggle tema
             themeToggle.addEventListener('click', function() {
                 const isDark = !body.classList.contains('light-mode');
                 setTheme(!isDark);
             });
+            
+            // Setup form validation
+            setupFormValidation();
             
             // Notifikasi
             const notification = document.getElementById('success-notification');
@@ -844,7 +980,7 @@
             handleScrollAnimation();
         });
         
-        // Jalanim animasi pertama kali
+        // Jalankan animasi pertama kali
         handleScrollAnimation();
     </script>
 </body>
