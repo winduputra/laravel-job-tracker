@@ -8,114 +8,111 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Mengimpor Tailwind CSS untuk styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Mengimpor Chart.js untuk grafik visual -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* Menggunakan font Inter dan transisi untuk perubahan tema */
         body {
             font-family: 'Inter', sans-serif;
             transition: background-color 0.3s, color 0.3s;
         }
-
-        /* Tema Gelap (Default) */
         body {
             background-color: #0f172a;
             color: #f8fafc;
         }
-
         .card {
             background-color: #1e293b;
             border-color: #475569;
+            border-width: 1.5px;
+            box-shadow: 0 4px 24px 0 rgba(30,41,59,0.12);
+            transition: box-shadow 0.2s;
         }
-
-        .dark-text {
-            color: #f8fafc;
+        .card:hover {
+            box-shadow: 0 8px 32px 0 rgba(99,102,241,0.15);
         }
-
+        .dark-text { color: #f8fafc; }
         input[type="text"], input[type="url"], input[type="date"], select, textarea {
             background-color: #1e293b !important;
             border-color: #475569 !important;
             color: #f8fafc !important;
-            padding: 0.75rem 1rem !important; /* Tambahkan padding yang lebih besar */
+            padding: 0.75rem 1rem !important;
         }
-
         input:focus, select:focus, textarea:focus {
             border-color: #6366f1 !important;
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5);
         }
-
-        /* Tema Terang */
         body.light-mode {
             background-color: #f1f5f9;
             color: #1a202c;
         }
-
         .light-mode .card {
             background-color: #ffffff;
             border-color: #e2e8f0;
         }
-
-        .light-mode .dark-text {
-            color: #1a202c;
-        }
-
+        .light-mode .dark-text { color: #1a202c; }
         .light-mode input[type="text"], .light-mode input[type="url"], .light-mode input[type="date"], .light-mode select, .light-mode textarea {
             background-color: #f9fafb !important;
             border-color: #cbd5e1 !important;
             color: #1a202c !important;
             padding: 0.75rem 1rem !important;
         }
-
         .light-mode input:focus, .light-mode select:focus, .light-mode textarea:focus {
             border-color: #4f46e5 !important;
             box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.5);
         }
-
-        /* Styling untuk table header pada tema terang */
         .light-mode thead tr th {
             background-color: #e2e8f0;
             color: #1a202c;
         }
-
-        /* Scrollbar styling for modern browsers */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6366f1; }
+        .light-mode ::-webkit-scrollbar-track { background: #e2e8f0; }
+        .light-mode ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .light-mode ::-webkit-scrollbar-thumb:hover { background: #4f46e5; }
+        /* Header styling */
+        .dashboard-header {
+            background: rgba(30,41,59,0.85);
+            border-radius: 1.5rem;
+            box-shadow: 0 4px 24px 0 rgba(30,41,59,0.12);
+            padding: 1.5rem 2rem;
+            margin-bottom: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
-        ::-webkit-scrollbar-track {
-            background: #1e293b;
-            border-radius: 10px;
+        .light-mode .dashboard-header {
+            background: rgba(255,255,255,0.85);
+            box-shadow: 0 4px 24px 0 rgba(99,102,241,0.08);
         }
-        ::-webkit-scrollbar-thumb {
-            background: #475569;
-            border-radius: 10px;
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #6366f1;
+        .logo-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
         }
-
-        .light-mode ::-webkit-scrollbar-track {
-            background: #e2e8f0;
-        }
-        .light-mode ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-        .light-mode ::-webkit-scrollbar-thumb:hover {
-            background: #4f46e5;
+        .logo-svg {
+            width: 100px;
+            height: 100px;
         }
     </style>
 </head>
 <body class="min-h-screen p-4 md:p-8">
 
-    <!-- Header dengan Tombol Logout dan Tema -->
-    <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl md:text-4xl font-bold dark-text">Dashboard Lamaran Kerja</h1>
+    <!-- Header dengan Logo, Tombol Logout dan Tema -->
+    <div class="dashboard-header">
+        <div class="logo-container">
+            <!-- Logo Image -->
+            <img src="{{ asset('images/logo.svg') }}" alt="Logo" class="logo-svg">
+            <span class="logo-title dark-text">Dashboard Lamaran Kerja</span>
+        </div>
         <div class="flex items-center space-x-4">
             <!-- Tombol untuk beralih mode gelap/terang -->
-            <button id="theme-toggle" class="p-2 rounded-full transition-colors duration-300">
+            <button id="theme-toggle" class="p-2 rounded-full transition-colors duration-300 hover:bg-indigo-600/20">
                 <!-- SVG untuk ikon bulan (gelap) dan matahari (terang) -->
                 <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 dark-text" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M21.73,15.71a1.2,1.2,0,0,1-.53.53A8.93,8.93,0,0,1,10,2.15,9,9,0,1,1,21.73,15.71Z" />
@@ -137,7 +134,9 @@
     <!-- Container Utama -->
     <div class="space-y-8">
         <!-- Bagian 1: Formulir Tambah Lamaran Baru -->
-        <div class="card p-6 md:p-8 rounded-3xl shadow-2xl border">
+        <div class="card p-6 md:p-8 rounded-3xl shadow-2xl shadow-md 
+            hover:-translate-y-2 hover:shadow-lg
+            transition transform duration-300 cursor-pointer">
             <h2 class="text-2xl font-bold mb-6 dark-text">Tambah Lamaran Kerja Baru</h2>
             <!-- Ubah action ke rute yang benar dan tambahkan CSRF token -->
             <form action="/dashboard" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
@@ -200,22 +199,30 @@
 
         <!-- Bagian 2: Ringkasan -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-    <div class="card p-6 rounded-3xl shadow-xl text-center border">
+    <div class="card p-6 rounded-3xl shadow-xl text-center border shadow-md 
+            hover:-translate-y-2 hover:shadow-lg
+            transition transform duration-300 cursor-pointer">
         <p class="text-sm font-medium text-gray-400 dark-text">Total Lamaran</p>
         <p class="text-4xl font-bold text-indigo-400 mt-2">{{ $total ?? 0 }}</p>
     </div>
 
-    <div class="card p-6 rounded-3xl shadow-xl text-center border">
+    <div class="card p-6 rounded-3xl shadow-xl text-center border shadow-md 
+            hover:-translate-y-2 hover:shadow-lg
+            transition transform duration-300 cursor-pointer">
         <p class="text-sm font-medium text-gray-400 dark-text">Wawancara</p>
         <p class="text-4xl font-bold text-yellow-400 mt-2">{{ $wawancara ?? 0 }}</p>
     </div>
 
-    <div class="card p-6 rounded-3xl shadow-xl text-center border">
+    <div class="card p-6 rounded-3xl shadow-xl text-center border shadow-md 
+            hover:-translate-y-2 hover:shadow-lg
+            transition transform duration-300 cursor-pointer">
         <p class="text-sm font-medium text-gray-400 dark-text">Diterima</p>
         <p class="text-4xl font-bold text-green-400 mt-2">{{ $diterima  ?? 0 }}</p>
     </div>
 
-    <div class="card p-6 rounded-3xl shadow-xl text-center border">
+    <div class="card p-6 rounded-3xl shadow-xl text-center border shadow-md 
+            hover:-translate-y-2 hover:shadow-lg
+            transition transform duration-300 cursor-pointer">
         <p class="text-sm font-medium text-gray-400 dark-text">Ditolak</p>
         <p class="text-4xl font-bold text-red-400 mt-2">{{ $ditolak  ?? 0 }}</p>
     </div>
@@ -224,14 +231,18 @@
         <!-- Bagian 3: Grafik Visual -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Grafik Total Lamaran per Platform -->
-            <div class="card p-6 rounded-3xl shadow-2xl border">
+            <div class="card p-6 rounded-3xl shadow-2xl border shadow-md 
+            hover:-translate-y-2 hover:shadow-lg
+            transition transform duration-300 cursor-pointer">
                 <h3 class="text-xl font-semibold mb-4 dark-text">Total Lamaran per Platform</h3>
                 <div style="height: 350px;">
                     <canvas id="platformChart"></canvas>
                 </div>
             </div>
             <!-- Grafik Status Lamaran -->
-            <div class="card p-6 rounded-3xl shadow-2xl border">
+            <div class="card p-6 rounded-3xl shadow-2xl border shadow-md 
+            hover:-translate-y-2 hover:shadow-lg
+            transition transform duration-300 cursor-pointer">
                 <h3 class="text-xl font-semibold mb-4 dark-text">Status Lamaran</h3>
                 <div style="height: 350px;">
                     <canvas id="statusChart"></canvas>
@@ -294,7 +305,7 @@
 
     <!-- Div untuk notifikasi pop-up -->
     <div id="success-notification" class="fixed bottom-5 right-5 z-50 transform transition-all duration-300 ease-out translate-x-full">
-        <div class="bg-emerald-500 text-white p-4 rounded-lg shadow-xl flex items-center space-x-3">
+        <div class="bg-emerald-500 text-white p-4 rounded-lg shadow-xl flex items-center space-x-3" >
             <!-- Ikon SVG untuk notifikasi -->
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />

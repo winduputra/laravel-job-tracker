@@ -6,14 +6,22 @@
     <title>Login - Job Tracker</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100 flex items-center justify-center h-screen">
+<body class="bg-gradient-to-br from-indigo-100 via-blue-100 to-purple-100 min-h-screen flex items-center justify-center">
 
-    <div class="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
-        <h2 class="text-2xl font-bold text-center text-gray-700 mb-6">Job Tracker - Login</h2>
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 animate-fade-in">
+        {{-- Logo --}}
+        <div class="mb-8 text-center">
+            <img
+                src="{{ asset('images/logo.svg') }}"
+                alt="Job Tracker"
+                class="mx-auto h-20 w-auto drop-shadow-md"
+            >          
+            <p class="text-gray-500 text-sm">Silakan login untuk melanjutkan</p>
+        </div>
 
         <!-- Error Message -->
         @if ($errors->any())
-            <div class="bg-red-100 text-red-600 p-3 rounded-lg mb-4 text-sm">
+            <div class="bg-red-100 text-red-600 p-3 rounded-lg mb-4 text-sm border border-red-200">
                 {{ $errors->first() }}
             </div>
         @endif
