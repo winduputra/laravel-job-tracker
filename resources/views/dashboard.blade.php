@@ -4,458 +4,848 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Lamaran Kerja</title>
-    <!-- Import font Inter dari Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        body {
-            background-color: #0f172a;
-            color: #f8fafc;
-        }
-        .card {
-            background-color: #1e293b;
-            border-color: #475569;
-            border-width: 1.5px;
-            box-shadow: 0 4px 24px 0 rgba(30,41,59,0.12);
-            transition: box-shadow 0.2s;
-        }
-        .card:hover {
-            box-shadow: 0 8px 32px 0 rgba(99,102,241,0.15);
-        }
-        .dark-text { color: #f8fafc; }
-        input[type="text"], input[type="url"], input[type="date"], select, textarea {
-            background-color: #1e293b !important;
-            border-color: #475569 !important;
-            color: #f8fafc !important;
-            padding: 0.75rem 1rem !important;
-        }
-        input:focus, select:focus, textarea:focus {
-            border-color: #6366f1 !important;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5);
-        }
-        body.light-mode {
-            background-color: #f1f5f9;
-            color: #1a202c;
-        }
-        .light-mode .card {
-            background-color: #ffffff;
-            border-color: #e2e8f0;
-        }
-        .light-mode .dark-text { color: #1a202c; }
-        .light-mode input[type="text"], .light-mode input[type="url"], .light-mode input[type="date"], .light-mode select, .light-mode textarea {
-            background-color: #f9fafb !important;
-            border-color: #cbd5e1 !important;
-            color: #1a202c !important;
-            padding: 0.75rem 1rem !important;
-        }
-        .light-mode input:focus, .light-mode select:focus, .light-mode textarea:focus {
-            border-color: #4f46e5 !important;
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.5);
-        }
-        .light-mode thead tr th {
-            background-color: #e2e8f0;
-            color: #1a202c;
-        }
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #1e293b; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #6366f1; }
-        .light-mode ::-webkit-scrollbar-track { background: #e2e8f0; }
-        .light-mode ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .light-mode ::-webkit-scrollbar-thumb:hover { background: #4f46e5; }
-        /* Header styling */
-        .dashboard-header {
-            background: rgba(30,41,59,0.85);
-            border-radius: 1.5rem;
-            box-shadow: 0 4px 24px 0 rgba(30,41,59,0.12);
-            padding: 1.5rem 2rem;
-            margin-bottom: 2.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .light-mode .dashboard-header {
-            background: rgba(255,255,255,0.85);
-            box-shadow: 0 4px 24px 0 rgba(99,102,241,0.08);
-        }
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        .logo-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-        }
-        .logo-svg {
-            width: 100px;
-            height: 100px;
-        }
-    </style>
-</head>
-<body class="min-h-screen p-4 md:p-8">
-
-    <!-- Header dengan Logo, Tombol Logout dan Tema -->
-    <div class="dashboard-header">
-        <div class="logo-container">
-            <!-- Logo Image -->
-            <img src="{{ asset('images/logo.svg') }}" alt="Logo" class="logo-svg">
-            <span class="logo-title dark-text">Dashboard Lamaran Kerja</span>
-        </div>
-        <div class="flex items-center space-x-4">
-            <!-- Tombol untuk beralih mode gelap/terang -->
-            <button id="theme-toggle" class="p-2 rounded-full transition-colors duration-300 hover:bg-indigo-600/20">
-                <!-- SVG untuk ikon bulan (gelap) dan matahari (terang) -->
-                <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 dark-text" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M21.73,15.71a1.2,1.2,0,0,1-.53.53A8.93,8.93,0,0,1,10,2.15,9,9,0,1,1,21.73,15.71Z" />
-                </svg>
-                <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden dark-text" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12,18a6,6,0,1,0-6-6A6,6,0,0,0,12,18Zm0-14a1,1,0,0,0,0,2h0a1,1,0,0,0,0-2Zm0,12a1,1,0,0,0,0,2h0a1,1,0,0,0,0-2ZM12,6a1,1,0,0,0-1,1V8a1,1,0,0,0,2,0V7A1,1,0,0,0,12,6Zm-6,6a1,1,0,0,0,1,1H8a1,1,0,0,0,0-2H7A1,1,0,0,0,6,12Zm14,0a1,1,0,0,0-1-1H16a1,1,0,0,0,0,2h1A1,1,0,0,0,20,12ZM7.76,7.76a1,1,0,0,0-1.41-1.41L5.6,7.15A1,1,0,0,0,7,8.56ZM16.24,16.24a1,1,0,0,0,1.41,1.41l1.41-1.41A1,1,0,0,0,17,14.84Zm0-8.48,1.41-1.41a1,1,0,0,0-1.41-1.41L14.84,7A1,1,0,0,0,16.24,8.48Zm-8.48,8.48L5.6,17A1,1,0,0,0,7,18.41L8.41,17A1,1,0,0,0,7.76,16.24Z" />
-                </svg>
-            </button>
-            <form action="/logout" method="POST">
-                <!-- Tambahkan token CSRF untuk formulir logout -->
-                @csrf
-                <button type="submit" class="bg-red-600 text-white font-semibold py-2 px-6 rounded-full shadow-lg hover:bg-red-700 transition duration-300">
-                    Logout
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Container Utama -->
-    <div class="space-y-8">
-        <!-- Bagian 1: Formulir Tambah Lamaran Baru -->
-        <div class="card p-6 md:p-8 rounded-3xl shadow-2xl shadow-md 
-            hover:-translate-y-2 hover:shadow-lg
-            transition transform duration-300 cursor-pointer">
-            <h2 class="text-2xl font-bold mb-6 dark-text">Tambah Lamaran Kerja Baru</h2>
-            <!-- Ubah action ke rute yang benar dan tambahkan CSRF token -->
-            <form action="/dashboard" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                @csrf
-                <!-- Input Posisi dan Platform -->
-                <div>
-                    <label for="posisi" class="block text-sm font-medium text-gray-400 dark-text mb-1">Posisi</label>
-                    <input type="text" id="posisi" name="posisi" placeholder="Masukkan posisi yang dilamar" class="w-full rounded-lg border-2 shadow-sm focus:ring-indigo-500">
-                </div>
-                <div>
-                    <label for="platform" class="block text-sm font-medium text-gray-400 dark-text mb-1">Platform</label>
-                    <select id="platform" name="platform" class="w-full rounded-lg border-2 shadow-sm focus:ring-indigo-500">
-                        <option value="">Pilih Platform</option>
-                        <option value="Glints">Glints</option>
-                        <option value="LinkedIn">LinkedIn</option>
-                        <option value="JobStreet">JobStreet</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-
-                <!-- Input URL Job dan Tanggal Lamaran -->
-                <div>
-                    <label for="url_job" class="block text-sm font-medium text-gray-400 dark-text mb-1">URL Job</label>
-                    <input type="url" id="url_job" name="url_job" placeholder="https://..." class="w-full rounded-lg border-2 shadow-sm focus:ring-indigo-500">
-                </div>
-                <div>
-                    <label for="tanggal_lamaran" class="block text-sm font-medium text-gray-400 dark-text mb-1">Tanggal Lamaran</label>
-                    <input type="date" id="tanggal_lamaran" name="tanggal_lamaran" class="w-full rounded-lg border-2 shadow-sm focus:ring-indigo-500">
-                </div>
-
-                <!-- Input Dokumen dan Status -->
-                <div>
-                    <label for="dokumen" class="block text-sm font-medium text-gray-400 dark-text mb-1">Dokumen yang digunakan</label>
-                    <input type="text" id="dokumen" name="dokumen" placeholder="Nama CV, portofolio, dll" class="w-full rounded-lg border-2 shadow-sm focus:ring-indigo-500">
-                </div>
-                <div>
-                    <label for="status" class="block text-sm font-medium text-gray-400 dark-text mb-1">Status</label>
-                    <select id="status" name="status" class="w-full rounded-lg border-2 shadow-sm focus:ring-indigo-500">
-                        <option value="dikirim">Dikirim</option>
-                        <option value="wawancara">Wawancara</option>
-                        <option value="diterima">Diterima</option>
-                        <option value="ditolak">Ditolak</option>
-                    </select>
-                </div>
-
-                <!-- Input Keterangan (span full width) -->
-                <div class="md:col-span-2">
-                    <label for="keterangan" class="block text-sm font-medium text-gray-400 dark-text mb-1">Keterangan</label>
-                    <textarea id="keterangan" name="keterangan" rows="5" placeholder="Catatan tambahan, alasan ditolak, dll." class="w-full rounded-lg border-2 shadow-sm focus:ring-indigo-500"></textarea>
-                </div>
-
-                <!-- Tombol Submit -->
-                <div class="md:col-span-2 flex justify-end mt-4">
-                    <button type="submit" class="bg-indigo-600 text-white font-semibold py-3 px-8 rounded-full shadow-md hover:bg-indigo-700 transition duration-300">
-                        Tambah Lamaran
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <!-- Bagian 2: Ringkasan -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-    <div class="card p-6 rounded-3xl shadow-xl text-center border shadow-md 
-            hover:-translate-y-2 hover:shadow-lg
-            transition transform duration-300 cursor-pointer">
-        <p class="text-sm font-medium text-gray-400 dark-text">Total Lamaran</p>
-        <p class="text-4xl font-bold text-indigo-400 mt-2">{{ $total ?? 0 }}</p>
-    </div>
-
-    <div class="card p-6 rounded-3xl shadow-xl text-center border shadow-md 
-            hover:-translate-y-2 hover:shadow-lg
-            transition transform duration-300 cursor-pointer">
-        <p class="text-sm font-medium text-gray-400 dark-text">Wawancara</p>
-        <p class="text-4xl font-bold text-yellow-400 mt-2">{{ $wawancara ?? 0 }}</p>
-    </div>
-
-    <div class="card p-6 rounded-3xl shadow-xl text-center border shadow-md 
-            hover:-translate-y-2 hover:shadow-lg
-            transition transform duration-300 cursor-pointer">
-        <p class="text-sm font-medium text-gray-400 dark-text">Diterima</p>
-        <p class="text-4xl font-bold text-green-400 mt-2">{{ $diterima  ?? 0 }}</p>
-    </div>
-
-    <div class="card p-6 rounded-3xl shadow-xl text-center border shadow-md 
-            hover:-translate-y-2 hover:shadow-lg
-            transition transform duration-300 cursor-pointer">
-        <p class="text-sm font-medium text-gray-400 dark-text">Ditolak</p>
-        <p class="text-4xl font-bold text-red-400 mt-2">{{ $ditolak  ?? 0 }}</p>
-    </div>
-</div>
-
-        <!-- Bagian 3: Grafik Visual -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Grafik Total Lamaran per Platform -->
-            <div class="card p-6 rounded-3xl shadow-2xl border shadow-md 
-            hover:-translate-y-2 hover:shadow-lg
-            transition transform duration-300 cursor-pointer">
-                <h3 class="text-xl font-semibold mb-4 dark-text">Total Lamaran per Platform</h3>
-                <div style="height: 350px;">
-                    <canvas id="platformChart"></canvas>
-                </div>
-            </div>
-            <!-- Grafik Status Lamaran -->
-            <div class="card p-6 rounded-3xl shadow-2xl border shadow-md 
-            hover:-translate-y-2 hover:shadow-lg
-            transition transform duration-300 cursor-pointer">
-                <h3 class="text-xl font-semibold mb-4 dark-text">Status Lamaran</h3>
-                <div style="height: 350px;">
-                    <canvas id="statusChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bagian 4: Detail Lamaran Kerja -->
-        <div class="card p-6 md:p-8 rounded-3xl shadow-2xl border">
-            <h2 class="text-2xl font-bold mb-6 dark-text">Detail Lamaran Kerja</h2>
-            <!-- Tabel placeholder -->
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y">
-                    <thead class="bg-slate-700 light-mode:bg-gray-200">
-                        <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider dark-text light-mode:text-gray-900">Posisi</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider dark-text light-mode:text-gray-900">Platform</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider dark-text light-mode:text-gray-900">URL Job</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider dark-text light-mode:text-gray-900">Dokumen</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider dark-text light-mode:text-gray-900">Keterangan</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider dark-text light-mode:text-gray-900">Tanggal</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider dark-text light-mode:text-gray-900">Tanggal Edit</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider dark-text light-mode:text-gray-900">Status</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider dark-text light-mode:text-gray-900">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-700 light-mode:divide-gray-200">
-                        @foreach($lamarans as $lamaran)
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium dark-text">{{ $lamaran->posisi }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400 light-mode:text-gray-600">{{ $lamaran->platform }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                <a href="{{ $lamaran->url_job }}" target="_blank" class="text-indigo-400 hover:text-indigo-300 light-mode:text-indigo-600 light-mode:hover:text-indigo-500">Lihat</a>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400 light-mode:text-gray-600">{{ $lamaran->dokumen }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400 light-mode:text-gray-600">{{ $lamaran->keterangan }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400 light-mode:text-gray-600">{{ $lamaran->tanggal_lamaran }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400 light-mode:text-gray-600">{{ $lamaran->updated_at->format('Y-m-d') }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                    {{ $lamaran->status == 'diterima' ? 'bg-green-800 text-green-200' : ($lamaran->status == 'ditolak' ? 'bg-red-800 text-red-200' : 'bg-yellow-800 text-yellow-200') }}">
-                                    {{ ucfirst($lamaran->status) }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex space-x-2">
-                                <a href="{{ route('dashboard.edit', $lamaran) }}" class="bg-indigo-600 text-white py-1 px-3 rounded-full shadow-md hover:bg-indigo-700 transition duration-300">Edit</a>
-                                <form action="{{ route('dashboard.destroy', $lamaran) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus lamaran ini?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="bg-red-600 text-white py-1 px-3 rounded-full">Hapus</button>
-                                </form>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Div untuk notifikasi pop-up -->
-    <div id="success-notification" class="fixed bottom-5 right-5 z-50 transform transition-all duration-300 ease-out translate-x-full">
-        <div class="bg-emerald-500 text-white p-4 rounded-lg shadow-xl flex items-center space-x-3" >
-            <!-- Ikon SVG untuk notifikasi -->
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-            </svg>
-            <span id="notification-message" class="font-semibold text-sm"></span>
-        </div>
-    </div>
-    
-    <!-- Script untuk Grafik Chart.js dan Logika Tema -->
     <script>
-    // Data untuk grafik Total Lamaran per Platform
-    const platformData = {
-        labels: {!! json_encode(array_keys($platformStats)) !!},    // nama platform
-        datasets: [{
-            label: 'Total Lamaran',
-            data: {!! json_encode(array_values($platformStats)) !!}, // jumlah per platform
-            backgroundColor: ['#6366f1', '#f97316', '#22c55e', '#a3a3a3'],
-            borderColor: 'rgba(0,0,0,0)',
-            borderWidth: 2
-        }]
-    };
-
-    // Data untuk grafik Status Lamaran
-    const statusData = {
-        labels: {!! json_encode(['Dikirim','Wawancara','Diterima','Ditolak']) !!},
-        datasets: [{
-            label: 'Status Lamaran',
-            data: {!! json_encode([$total, $wawancara, $diterima, $ditolak]) !!},
-            backgroundColor: ['#60a5fa', '#facc15', '#4ade80', '#f87171'],
-            hoverOffset: 4
-        }]
-    };
-
-    // Fungsi untuk mendapatkan opsi Chart.js berdasarkan tema
-    function getChartOptions(isDarkMode) {
-        const labelColor = isDarkMode ? '#94a3b8' : '#64748b';
-        const gridColor = isDarkMode ? '#334155' : '#e2e8f0';
-
-        return {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    labels: {
-                        color: labelColor
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    grid: {
-                        color: gridColor
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        dark: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                        }
                     },
-                    ticks: {
-                        color: labelColor
-                    }
-                },
-                y: {
-                    grid: {
-                        color: gridColor
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
                     },
-                    ticks: {
-                        color: labelColor,
-                        stepSize: 1
-                    }
-                }
-            }
-        };
-    }
-
-    // Inisialisasi Chart.js
-    let platformChart, statusChart;
-
-    function initCharts(isDarkMode) {
-        const platformCtx = document.getElementById('platformChart').getContext('2d');
-        const statusCtx = document.getElementById('statusChart').getContext('2d');
-
-        const chartOptions = getChartOptions(isDarkMode);
-
-        if (platformChart) platformChart.destroy();
-        platformChart = new Chart(platformCtx, {
-            type: 'bar',
-            data: platformData,
-            options: chartOptions
-        });
-
-        if (statusChart) statusChart.destroy();
-        statusChart = new Chart(statusCtx, {
-            type: 'doughnut',
-            data: statusData,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        labels: {
-                            color: chartOptions.plugins.legend.labels.color
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
                         }
                     }
                 }
             }
+        }
+    </script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #06b6d4;
+            --dark: #0f172a;
+            --light: #f8fafc;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+
+        body.light-mode {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            color: #0f172a;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .light-mode .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(99, 102, 241, 0.15);
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            border-radius: 1.5rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transform: rotate(30deg);
+        }
+
+        .dashboard-header {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .light-mode .dashboard-header {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-item {
+            position: relative;
+            padding: 0.75rem 1.5rem;
+            border-radius: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+        }
+
+        .nav-item:hover:not(.active) {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .theme-toggle {
+            width: 50px;
+            height: 26px;
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            border-radius: 2rem;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle::before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            top: 3px;
+            left: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle.active::before {
+            left: 27px;
+        }
+
+        .theme-icon {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .sun-icon {
+            left: 6px;
+            opacity: 0;
+        }
+
+        .moon-icon {
+            right: 6px;
+            opacity: 1;
+        }
+
+        .theme-toggle.active .sun-icon {
+            opacity: 1;
+        }
+
+        .theme-toggle.active .moon-icon {
+            opacity: 0;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .form-input {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            color: #f8fafc;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .light-mode .form-input {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #0f172a;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .table-row {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .light-mode .table-row {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .table-row:hover {
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .status-badge {
+            padding: 0.35rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .status-dikirim {
+            background: rgba(96, 165, 250, 0.2);
+            color: #60a5fa;
+        }
+
+        .status-wawancara {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .status-diterima {
+            background: rgba(52, 211, 153, 0.2);
+            color: #34d199;
+        }
+
+        .status-ditolak {
+            background: rgba(248, 113, 113, 0.2);
+            color: #f87171;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+            transform: translateX(150%);
+            transition: transform 0.5s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .pulse-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #10b981;
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #6366f1;
+            border-radius: 10px;
+        }
+
+        .light-mode ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .light-mode ::-webkit-scrollbar-thumb {
+            background: #4f46e5;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+    <!-- Header dengan navigasi -->
+    <div class="dashboard-header p-6 mb-8 flex justify-between items-center">
+        <div class="flex items-center space-x-4">
+            <div class="bg-primary-600 p-3 rounded-xl shadow-lg">
+                <i class="fas fa-briefcase text-white text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="text-2xl font-bold">Job Application Dashboard</h1>
+                <p class="text-sm opacity-75">Kelola lamaran kerja Anda dengan mudah</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-6">
+            <!-- Toggle Theme -->
+            <div class="flex items-center space-x-4">
+                <i class="fas fa-sun text-yellow-400"></i>
+                <div class="theme-toggle active" id="theme-toggle">
+                    <i class="fas fa-sun theme-icon sun-icon"></i>
+                    <i class="fas fa-moon theme-icon moon-icon"></i>
+                </div>
+                <i class="fas fa-moon text-indigo-400"></i>
+            </div>
+
+            <!-- Notifikasi -->
+            <div class="relative">
+                <button class="p-2 rounded-full bg-dark-800 hover:bg-dark-700 transition">
+                    <i class="fas fa-bell text-xl"></i>
+                </button>
+                <span class="pulse-dot"></span>
+            </div>
+
+            <!-- Profil -->
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-r from-primary-500 to-secondary-400 flex items-center justify-center text-white font-bold">
+                    U
+                </div>
+                <div>
+                    <p class="font-semibold">User Name</p>
+                    <p class="text-xs opacity-75">Admin</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mx-auto grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <!-- Sidebar -->
+        <div class="lg:col-span-1">
+            <div class="glass-card p-6 mb-6">
+                <h2 class="text-lg font-bold mb-4">Menu Navigasi</h2>
+                <ul class="space-y-2">
+                    <li class="nav-item active"><i class="fas fa-home mr-3"></i> Dashboard</li>
+                    <li class="nav-item"><i class="fas fa-chart-bar mr-3"></i> Statistik</li>
+                    <li class="nav-item"><i class="fas fa-file-alt mr-3"></i> Lamaran</li>
+                    <li class="nav-item"><i class="fas fa-cog mr-3"></i> Pengaturan</li>
+                    <li class="nav-item"><i class="fas fa-question-circle mr-3"></i> Bantuan</li>
+                </ul>
+            </div>
+
+            <div class="glass-card p-6">
+                <h2 class="text-lg font-bold mb-4">Progress Bulan Ini</h2>
+                <div class="flex items-center justify-center mb-4">
+                    <div class="relative w-40 h-40">
+                        <svg class="w-full h-full" viewBox="0 0 100 100">
+                            <circle class="text-dark-700 stroke-current" stroke-width="10" cx="50" cy="50" r="40" fill="transparent"></circle>
+                            <circle class="text-primary-500 stroke-current" stroke-width="10" stroke-linecap="round" cx="50" cy="50" r="40" fill="transparent" stroke-dasharray="251.2" stroke-dashoffset="175.84" transform="rotate(-90 50 50)"></circle>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-2xl font-bold">30%</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-center text-sm opacity-75">30 dari 100 target lamaran</p>
+            </div>
+        </div>
+
+        <!-- Konten Utama -->
+        <div class="lg:col-span-3">
+            <!-- Ringkasan Statistik -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="stat-card p-6 text-white animate-fade-in">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-sm opacity-90">Total Lamaran</p>
+                            <p class="text-3xl font-bold mt-2">{{ $total ?? 0 }}</p>
+                        </div>
+                        <div class="bg-white bg-opacity-20 p-3 rounded-xl">
+                            <i class="fas fa-file-alt text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-center mt-4">
+                        <i class="fas fa-arrow-up text-xs mr-1"></i>
+                        <p class="text-xs">+5 dari bulan lalu</p>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6 animate-fade-in delay-100">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-sm opacity-75">Wawancara</p>
+                            <p class="text-3xl font-bold mt-2 text-yellow-400">{{ $wawancara ?? 0 }}</p>
+                        </div>
+                        <div class="bg-yellow-400 bg-opacity-20 p-3 rounded-xl">
+                            <i class="fas fa-handshake text-xl text-yellow-400"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-center mt-4">
+                        <i class="fas fa-arrow-up text-xs mr-1 text-yellow-400"></i>
+                        <p class="text-xs">+2 dari minggu lalu</p>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6 animate-fade-in delay-200">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-sm opacity-75">Diterima</p>
+                            <p class="text-3xl font-bold mt-2 text-green-400">{{ $diterima ?? 0 }}</p>
+                        </div>
+                        <div class="bg-green-400 bg-opacity-20 p-3 rounded-xl">
+                            <i class="fas fa-check-circle text-xl text-green-400"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-center mt-4">
+                        <i class="fas fa-arrow-up text-xs mr-1 text-green-400"></i>
+                        <p class="text-xs">+1 dari minggu lalu</p>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6 animate-fade-in delay-300">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-sm opacity-75">Ditolak</p>
+                            <p class="text-3xl font-bold mt-2 text-red-400">{{ $ditolak ?? 0 }}</p>
+                        </div>
+                        <div class="bg-red-400 bg-opacity-20 p-3 rounded-xl">
+                            <i class="fas fa-times-circle text-xl text-red-400"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-center mt-4">
+                        <i class="fas fa-arrow-down text-xs mr-1 text-red-400"></i>
+                        <p class="text-xs">-3 dari minggu lalu</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grafik -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="glass-card p-6 animate-fade-in delay-200">
+                    <h3 class="text-lg font-bold mb-4">Total Lamaran per Platform</h3>
+                    <div style="height: 300px;">
+                        <canvas id="platformChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="glass-card p-6 animate-fade-in delay-300">
+                    <h3 class="text-lg font-bold mb-4">Status Lamaran</h3>
+                    <div style="height: 300px;">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Tambah Lamaran -->
+            <div class="glass-card p-6 mb-8 animate-fade-in delay-400">
+                <h2 class="text-xl font-bold mb-6">Tambah Lamaran Kerja Baru</h2>
+                <form action="/dashboard" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    @csrf
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Posisi</label>
+                        <input type="text" name="posisi" placeholder="Masukkan posisi yang dilamar" class="form-input w-full">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Platform</label>
+                        <select name="platform" class="form-input w-full">
+                            <option value="">Pilih Platform</option>
+                            <option value="LinkedIn">LinkedIn</option>
+                            <option value="JobStreet">JobStreet</option>
+                            <option value="Indeed">Indeed</option>
+                            <option value="Glints">Glints</option>
+                            <option value="other">Lainnya</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">URL Job</label>
+                        <input type="url" name="url_job" placeholder="https://..." class="form-input w-full">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Tanggal Lamaran</label>
+                        <input type="date" name="tanggal_lamaran" class="form-input w-full">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Dokumen</label>
+                        <input type="text" name="dokumen" placeholder="Nama CV, portofolio, dll" class="form-input w-full">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Status</label>
+                        <select name="status" class="form-input w-full">
+                            <option value="dikirim">Dikirim</option>
+                            <option value="wawancara">Wawancara</option>
+                            <option value="diterima">Diterima</option>
+                            <option value="ditolak">Ditolak</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium mb-2">Keterangan</label>
+                        <textarea name="keterangan" rows="3" placeholder="Catatan tambahan, alasan ditolak, dll." class="form-input w-full"></textarea>
+                    </div>
+                    <div class="md:col-span-2 flex justify-end">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-plus mr-2"></i> Tambah Lamaran
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Tabel Lamaran -->
+            <div class="glass-card p-6 animate-fade-in">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold">Detail Lamaran Kerja</h2>
+                    <div class="flex space-x-3">
+                        <button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition">
+                            <i class="fas fa-filter"></i>
+                        </button>
+                        <button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition">
+                            <i class="fas fa-sort"></i>
+                        </button>
+                        <button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="text-left border-b border-dark-700">
+                                <th class="pb-3">Posisi</th>
+                                <th class="pb-3">Platform</th>
+                                <th class="pb-3">Dokumen</th>
+                                <th class="pb-3">Tanggal</th>
+                                <th class="pb-3">Status</th>
+                                <th class="pb-3 text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($lamarans as $lamaran)
+                            <tr class="table-row">
+                                <td class="py-4">{{ $lamaran->posisi }}</td>
+                                <td class="py-4">{{ $lamaran->platform }}</td>
+                                <td class="py-4">{{ $lamaran->dokumen }}</td>
+                                <td class="py-4">{{ $lamaran->tanggal_lamaran }}</td>
+                                <td class="py-4">
+                                    <span class="status-badge status-{{ $lamaran->status }}">
+                                        {{ ucfirst($lamaran->status) }}
+                                    </span>
+                                </td>
+                                <td class="py-4 text-right">
+                                    <div class="flex justify-end space-x-2">
+                                        <a href="{{ route('dashboard.edit', $lamaran) }}" class="p-2 rounded-lg bg-blue-500 bg-opacity-20 text-blue-400 hover:bg-opacity-30 transition">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form action="{{ route('dashboard.destroy', $lamaran) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus lamaran ini?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="p-2 rounded-lg bg-red-500 bg-opacity-20 text-red-400 hover:bg-opacity-30 transition">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="flex justify-between items-center pt-6 mt-6 border-t border-dark-700">
+                    <p class="text-sm opacity-75">Menampilkan 5 dari {{ $total ?? 0 }} lamaran</p>
+                    <div class="flex space-x-2">
+                        <button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="p-2 rounded-lg bg-primary-500 text-white transition">1</button>
+                        <button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition">2</button>
+                        <button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition">3</button>
+                        <button class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifikasi -->
+    <div id="success-notification" class="notification">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle text-xl mr-3"></i>
+            <div>
+                <p class="font-semibold">Berhasil!</p>
+                <p id="notification-message" class="text-sm">Lamaran berhasil ditambahkan</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data untuk grafik
+        const platformData = {
+            labels: {!! json_encode(array_keys($platformStats)) !!},
+            datasets: [{
+                label: 'Total Lamaran',
+                data: {!! json_encode(array_values($platformStats)) !!},
+                backgroundColor: ['#6366f1', '#f97316', '#10b981', '#8b5cf6', '#ec4899'],
+                borderWidth: 0,
+                borderRadius: 6
+            }]
+        };
+
+        const statusData = {
+            labels: ['Dikirim', 'Wawancara', 'Diterima', 'Ditolak'],
+            datasets: [{
+                data: {!! json_encode([$total, $wawancara, $diterima, $ditolak]) !!},
+                backgroundColor: ['#6366f1', '#f59e0b', '#10b981', '#ef4444'],
+                borderWidth: 0,
+                hoverOffset: 12
+            }]
+        };
+
+        // Inisialisasi Chart.js
+        let platformChart, statusChart;
+
+        function initCharts() {
+            const platformCtx = document.getElementById('platformChart').getContext('2d');
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+
+            platformChart = new Chart(platformCtx, {
+                type: 'bar',
+                data: platformData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            statusChart = new Chart(statusCtx, {
+                type: 'doughnut',
+                data: statusData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: 'rgba(255, 255, 255, 0.7)',
+                                padding: 20,
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Toggle tema
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+
+        function setTheme(isDark) {
+            if (isDark) {
+                body.classList.remove('light-mode');
+                themeToggle.classList.add('active');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.add('light-mode');
+                themeToggle.classList.remove('active');
+                localStorage.setItem('theme', 'light');
+            }
+            
+            // Update chart colors based on theme
+            updateChartsTheme(isDark);
+        }
+
+        function updateChartsTheme(isDark) {
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            const textColor = isDark ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)';
+            
+            if (platformChart) {
+                platformChart.options.scales.y.grid.color = gridColor;
+                platformChart.options.scales.y.ticks.color = textColor;
+                platformChart.options.scales.x.ticks.color = textColor;
+                platformChart.update();
+            }
+            
+            if (statusChart) {
+                statusChart.options.plugins.legend.labels.color = textColor;
+                statusChart.update();
+            }
+        }
+
+        // Inisialisasi
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set tema berdasarkan local storage atau preferensi sistem
+            const savedTheme = localStorage.getItem('theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme === 'light' || (!savedTheme && !systemPrefersDark)) {
+                setTheme(false);
+            } else {
+                setTheme(true);
+            }
+            
+            // Inisialisasi chart
+            initCharts();
+            
+            // Event listener untuk toggle tema
+            themeToggle.addEventListener('click', function() {
+                const isDark = !body.classList.contains('light-mode');
+                setTheme(!isDark);
+            });
+            
+            // Notifikasi
+            const notification = document.getElementById('success-notification');
+            const messageContainer = document.getElementById('notification-message');
+            const successMessage = '{{ session('success') }}';
+            
+            if (successMessage) {
+                messageContainer.textContent = successMessage;
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 5000);
+            }
         });
-    }
 
-    // Tema gelap/terang
-    const themeToggle = document.getElementById('theme-toggle');
-    const moonIcon = document.getElementById('moon-icon');
-    const sunIcon = document.getElementById('sun-icon');
-
-    function toggleTheme() {
-        const isDarkMode = !document.body.classList.toggle('light-mode');
-        localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-
-        if (isDarkMode) {
-            moonIcon.classList.remove('hidden');
-            sunIcon.classList.add('hidden');
-        } else {
-            moonIcon.classList.add('hidden');
-            sunIcon.classList.remove('hidden');
-        }
-        initCharts(isDarkMode);
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const savedTheme = localStorage.getItem('theme');
-        const isDarkMode = (savedTheme === 'light') ? false : true;
-
-        if (savedTheme === 'light') {
-            document.body.classList.add('light-mode');
-            moonIcon.classList.add('hidden');
-            sunIcon.classList.remove('hidden');
-        }
-
-        initCharts(isDarkMode);
-        themeToggle.addEventListener('click', toggleTheme);
-
-        // Notifikasi sukses
-        const notification = document.getElementById('success-notification');
-        const messageContainer = document.getElementById('notification-message');
-        const successMessage = '{{ session('success') }}';
-
-        if (successMessage) {
-            messageContainer.textContent = successMessage;
-            notification.classList.remove('translate-x-full');
-
-            setTimeout(() => {
-                notification.classList.add('translate-x-full');
-            }, 5000);
-        }
-    });
-</script>
+        // Animasi scroll
+        const scrollElements = document.querySelectorAll('.animate-fade-in');
+        
+        const elementInView = (el, dividend = 1) => {
+            const elementTop = el.getBoundingClientRect().top;
+            return (
+                elementTop <= (window.innerHeight || document.documentElement.clientHeight) / dividend
+            );
+        };
+        
+        const displayScrollElement = (element) => {
+            element.style.opacity = "1";
+            element.style.transform = "translateY(0)";
+        };
+        
+        const handleScrollAnimation = () => {
+            scrollElements.forEach((el) => {
+                if (elementInView(el, 1.2)) {
+                    displayScrollElement(el);
+                }
+            });
+        };
+        
+        window.addEventListener('scroll', () => {
+            handleScrollAnimation();
+        });
+        
+        // Jalanim animasi pertama kali
+        handleScrollAnimation();
+    </script>
 </body>
 </html>
